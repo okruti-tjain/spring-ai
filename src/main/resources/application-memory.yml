@@ -1,0 +1,28 @@
+spring:
+  ai:
+    vertex:
+      ai:
+        embedding:
+          project-id: okruti-ai
+          location: "europe-west1"
+          text:
+            options:
+              model: "gemini-embedding-001"
+        gemini:
+          project-id: okruti-ai
+          location: us-central1
+          transport: rest
+          credentials-uri: classpath:okruti-ai-token.json
+          chat:
+            options:
+              model: gemini-2.0-flash-lite-001
+  datasource:
+    url: jdbc:hsqldb:mem:chatdb
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:org/springframework/ai/chat/memory/repository/jdbc/schema-hsqldb.sql

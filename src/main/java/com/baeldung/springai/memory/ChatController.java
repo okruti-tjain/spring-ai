@@ -1,14 +1,15 @@
-package Spring.AI.Model.sample.controller;
+package com.baeldung.springai.memory;
 
-import Spring.AI.Model.sample.services.ChatService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import javax.validation.Valid;
+
+@RestController
 public class ChatController {
+
     private final ChatService chatService;
 
     public ChatController(ChatService chatService) {
@@ -16,8 +17,9 @@ public class ChatController {
     }
 
     @PostMapping("/chat")
-    public ResponseEntity<String> chat(@RequestBody @NotNull String prompt) {
-        String response = chatService.chat(prompt);
+    public ResponseEntity<String> chat(@RequestBody @Valid ChatRequest request) {
+        String response = chatService.chat(request.getPrompt());
         return ResponseEntity.ok(response);
     }
+
 }
