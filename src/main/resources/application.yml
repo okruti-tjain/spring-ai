@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: sample
+  cloud:
+    gcp:
+      credentials:
+        location: "file://D:/projects/okruti-ai-d056f6c0ead8.json"
+  ai:
+    vertex:
+      ai:
+        gemini:
+          transport: rest
+          project-id: "okruti-ai"
+          location: "us-central1"
+#          api-endpoint: "https://aiplatform.googleapis.com"
+          chat:
+            options:
+              model: "gemini-2.0-flash-lite-001"
+
+        embedding:
+          project-id: "okruti-ai"
+          location: "us-central1"
+          model: "gemini-embedding"
+
