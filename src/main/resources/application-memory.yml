@@ -4,7 +4,9 @@ spring:
       ai:
         embedding:
           project-id: okruti-ai
-          location: "europe-west1"
+          location: us-central1
+          transport: rest
+          credentials-uri: classpath:okruti-ai-token.json
           text:
             options:
               model: "gemini-embedding-001"
@@ -26,3 +28,8 @@ spring:
     init:
       mode: always
       schema-locations: classpath:org/springframework/ai/chat/memory/repository/jdbc/schema-hsqldb.sql
+  data:
+    redis:
+      host: localhost #127.0.0.1
+      port: 6379
+      password: tanu jain
