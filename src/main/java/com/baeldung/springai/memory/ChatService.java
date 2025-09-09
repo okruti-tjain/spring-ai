@@ -4,12 +4,11 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,19 +18,21 @@ public class ChatService {
 
     private final ChatClient chatClient;
     private final String conversationId;
+    private final EmbeddingModel embeddingModel;
 
-    public ChatService(ChatModel chatModel, ChatMemory chatMemory) {
+    public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
         this.conversationId = UUID.randomUUID().toString();
+        this.embeddingModel = embeddingModel;
     }
 
     public String getConversationId() {
         return conversationId;
     }
 
-    public String chat(String prompt) {
+    public ChatRequest chat(String prompt) {
         System.out.println("Received prompt: " + prompt);
 
         String response = chatClient.prompt()
@@ -41,7 +42,15 @@ public class ChatService {
                 .content();
 
         System.out.println("AI Response: " + response);
-        return response;
+        // 2. Generate embedding vector for the prompt
+        float[] embeddingArray = embeddingModel.embed(prompt);
+        List<Float> embedding = new ArrayList<>();
+        for (float f : embeddingArray) {
+            embedding.add(f);
+        }
+
+        // 3. Wrap everything in ChatResponse DTO
+        return new ChatRequest(prompt, response, embedding);
     }
 
 }

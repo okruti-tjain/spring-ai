@@ -1,18 +1,17 @@
 package com.baeldung.springai.memory;
 
-import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+@Getter
+@AllArgsConstructor
 public class ChatRequest {
 
     @NotNull
     private String prompt;
-
-    public String getPrompt() {
-        return prompt;
-    }
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
-    }
-
+    private String response;
+    private List<Float> embedding;
 }
