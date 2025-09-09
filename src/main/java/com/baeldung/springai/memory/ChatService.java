@@ -19,13 +19,11 @@ public class ChatService {
 
     private final ChatClient chatClient;
     private final String conversationId;
-    private final VectorStore vectorStore;
 
-    public ChatService(ChatModel chatModel, ChatMemory chatMemory,VectorStore vectorStore) {
+    public ChatService(ChatModel chatModel, ChatMemory chatMemory) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
-        this.vectorStore=vectorStore;
         this.conversationId = UUID.randomUUID().toString();
     }
 
@@ -34,28 +32,15 @@ public class ChatService {
     }
 
     public String chat(String prompt) {
+        System.out.println("Received prompt: " + prompt);
 
-        // Step 1: Look for semantically similar prompt in Redis
-        List<Document> similarDocs=vectorStore.similaritySearch(
-          SearchRequest.builder()
-        .query(prompt)
-        .topK(1)
-        .similarityThreshold(0.90f)
-        .build()
-        );
-        if (!similarDocs.isEmpty()){
-            return (String) similarDocs.get(0).getMetadata().get("response");
-        }
-        // Step 2: If not found, call AI API
-        String response=chatClient.prompt()
-                .user(userMessage->userMessage.text(prompt))
-                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,conversationId))
+        String response = chatClient.prompt()
+                .user(userMessage -> userMessage.text(prompt))
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 .call()
                 .content();
-        // Step 3: Store prompt as the embedded content and response in metadata
-        Document doc=new Document(prompt);
-        doc.getMetadata().put("response",response);
-        vectorStore.add(List.of(doc));
+
+        System.out.println("AI Response: " + response);
         return response;
     }
 

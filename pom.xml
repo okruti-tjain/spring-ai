@@ -57,6 +57,16 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-model-chat-memory-repository-jdbc</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+<!--        <dependency>-->
+<!--            <groupId>redis.clients</groupId>-->
+<!--            <artifactId>jedis</artifactId>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-redis-store &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.ai</groupId>-->
+<!--            <artifactId>spring-ai-redis-store</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
