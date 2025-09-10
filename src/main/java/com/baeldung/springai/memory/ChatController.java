@@ -24,6 +24,12 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("redis/chat")
+    public ResponseEntity<ChatRequest> redisChat(@RequestBody @Valid ChatRequest request) {
+        ChatRequest response = chatService.redisChat(request.getPrompt());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/search")
     public List<Document> semanticSearch(@RequestBody String prompt) {
         return chatService.semanticSearch(prompt);
