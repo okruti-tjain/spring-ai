@@ -25,7 +25,7 @@ public class RedisConfig {
                 .prefix("chat:")
                 .vectorAlgorithm(RedisVectorStore.Algorithm.HSNW)
                 .initializeSchema(true)
-//                .metadataFields(new RedisVectorStore.MetadataField("response", Schema.FieldType.TEXT))
+                .metadataFields(new RedisVectorStore.MetadataField("response", Schema.FieldType.TEXT))
                 .build();
     }
 }
