@@ -14,4 +14,5 @@ public class ChatRequest {
     private String prompt;
     private String response;
     private List<Float> embedding;
+    private String conversationId;
 }
