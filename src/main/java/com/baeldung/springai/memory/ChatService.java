@@ -191,7 +191,6 @@ import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -208,8 +207,11 @@ public class ChatService {
     private final VectorStore vectorStore;
     private static final double DEFAULT_SIMILARITY_THRESHOLD = 0.05;
 
-    public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore) {
-        this.chatClient = ChatClient.builder(chatModel).defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()).build();
+    public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore,WeatherTool weatherTool) {
+        this.chatClient = ChatClient.builder(chatModel)
+                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                .defaultTools(weatherTool)
+                .build();
         this.conversationId = UUID.randomUUID().toString();
         this.embeddingModel = embeddingModel;
         this.vectorStore = vectorStore;
@@ -269,7 +271,11 @@ public class ChatService {
 
 //      Calls AI client and returns response.
     private String callAI(String prompt) {
-        String response = chatClient.prompt().user(userMessage -> userMessage.text(prompt)).advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId)).call().content();
+        String response = chatClient.prompt()
+                .user(userMessage -> userMessage.text(prompt))
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .call()
+                .content();
         System.out.println("AI Response: " + response);
         return response;
     }
