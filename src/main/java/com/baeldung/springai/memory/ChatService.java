@@ -181,6 +181,7 @@
 //
 package com.baeldung.springai.memory;
 
+import com.baeldung.springai.memory.iplinfo.IplTools;
 import lombok.Getter;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -207,10 +208,11 @@ public class ChatService {
     private final VectorStore vectorStore;
     private static final double DEFAULT_SIMILARITY_THRESHOLD = 0.05;
 
-    public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore,WeatherTool weatherTool) {
+    public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore,
+                       WeatherTool weatherTool, IplTools iplTools) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .defaultTools(weatherTool)
+                .defaultTools(weatherTool,iplTools)
                 .build();
         this.conversationId = UUID.randomUUID().toString();
         this.embeddingModel = embeddingModel;
