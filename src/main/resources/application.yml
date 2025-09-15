@@ -10,3 +10,15 @@ spring:
           chat:
             options:
               model: gemini-2.0-flash-lite
+
+  mail:
+    host: smtp.hostinger.com
+    port: 587
+    username: support@peoplenest.in
+    password: PeopleNest@123
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

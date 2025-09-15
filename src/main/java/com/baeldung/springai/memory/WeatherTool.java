@@ -5,12 +5,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.json.JSONObject;
 
+
 @Component
 public class WeatherTool {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // ✅ MCP tool accessible by LLM
+    // MCP tool accessible by LLM
     @Tool
     public String getWeather(String city) {
         try {

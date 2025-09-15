@@ -209,10 +209,10 @@ public class ChatService {
     private static final double DEFAULT_SIMILARITY_THRESHOLD = 0.05;
 
     public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore,
-                       WeatherTool weatherTool, IplTools iplTools) {
+                       WeatherTool WeatherTool, IplTools iplTools,EmailTool emailTool) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .defaultTools(weatherTool,iplTools)
+                .defaultTools(WeatherTool,iplTools,emailTool)
                 .build();
         this.conversationId = UUID.randomUUID().toString();
         this.embeddingModel = embeddingModel;
