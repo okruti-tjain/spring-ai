@@ -192,6 +192,7 @@ import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -209,10 +210,10 @@ public class ChatService {
     private static final double DEFAULT_SIMILARITY_THRESHOLD = 0.05;
 
     public ChatService(ChatModel chatModel, ChatMemory chatMemory, EmbeddingModel embeddingModel, VectorStore vectorStore,
-                       WeatherTool WeatherTool, IplTools iplTools,EmailTool emailTool) {
+                       WeatherTool WeatherTool, IplTools iplTools, EmailTool emailTool) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .defaultTools(WeatherTool,iplTools,emailTool)
+                .defaultTools(WeatherTool, iplTools, emailTool)
                 .build();
         this.conversationId = UUID.randomUUID().toString();
         this.embeddingModel = embeddingModel;
@@ -220,7 +221,7 @@ public class ChatService {
     }
 
 
-//      Handles a chat request: always calls AI and stores result.
+    //      Handles a chat request: always calls AI and stores result.
     public ChatRequest chat(String prompt) {
         System.out.println("Received prompt: " + prompt);
 
@@ -230,7 +231,7 @@ public class ChatService {
         return new ChatRequest(prompt, response, embedPrompt(prompt), conversationId);
     }
 
-//      Handles a chat request with Redis caching:
+    //      Handles a chat request with Redis caching:
 //      returns cached response if a close match exists; otherwise calls AI.
     public ChatRequest redisChat(String prompt) {
         System.out.println("Received prompt: " + prompt);
@@ -248,21 +249,25 @@ public class ChatService {
         return new ChatRequest(prompt, response, null, conversationId);
     }
 
-//      Performs semantic search and prints matched prompts and responses.
+    //      Performs semantic search and prints matched prompts and responses.
     public List<Document> semanticSearch(String query) {
         System.out.println("Performing semantic search for: " + query);
         List<Document> results = vectorStore.similaritySearch(query);
 
         results.forEach(doc -> {
+            Object rawDistance = doc.getMetadata().get("distance");
+            double distance = rawDistance == null ? Double.MAX_VALUE : ((Number) rawDistance).doubleValue();
             System.out.println("Matched Prompt: " + doc.getText());
             System.out.println("Response: " + doc.getMetadata().get("response"));
+            System.out.println("distance:" + distance);
         });
 
         return results;
     }
 
-//      Reusable method to generate embeddings for a prompt.
+    //      Reusable method to generate embeddings for a prompt.
     private List<Float> embedPrompt(String prompt) {
+        System.out.println("EmbeddingModel: " + embeddingModel.getClass().getName());
         float[] embeddingArray = embeddingModel.embed(prompt);
         List<Float> embedding = new ArrayList<>(embeddingArray.length);
         for (float f : embeddingArray) {
@@ -271,7 +276,7 @@ public class ChatService {
         return embedding;
     }
 
-//      Calls AI client and returns response.
+    //      Calls AI client and returns response.
     private String callAI(String prompt) {
         String response = chatClient.prompt()
                 .user(userMessage -> userMessage.text(prompt))
@@ -282,13 +287,13 @@ public class ChatService {
         return response;
     }
 
-//      Saves a prompt and response to the vector store.
+    //      Saves a prompt and response to the vector store.
     private void saveToVectorStore(String prompt, String response) {
         Document doc = new Document(prompt, Map.of("response", response, "conversationId", conversationId));
         vectorStore.add(List.of(doc));
     }
 
-//      Performs a semantic search and returns the cached response if similarity is above threshold.
+    //      Performs a semantic search and returns the cached response if similarity is above threshold.
     private String getCachedResponse(String prompt, double threshold) {
         List<Document> results = vectorStore.similaritySearch(prompt);
 
