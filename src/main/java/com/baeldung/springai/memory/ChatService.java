@@ -61,7 +61,6 @@ public ChatService(ChatModel chatModel,
         if (jwtUtils.isAuthenticated()) {
             System.out.println("Authenticated user: " + jwtUtils.getCurrentUsername());
             builder.defaultTools(iplTools);
-            System.out.println("ipl tools fetched");
         }
         else {
             System.out.println("UnAuthorised");
