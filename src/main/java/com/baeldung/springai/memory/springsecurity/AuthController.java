@@ -1,5 +1,9 @@
 package com.baeldung.springai.memory.springsecurity;
 
+import com.baeldung.springai.memory.user.User;
+import com.baeldung.springai.memory.user.UserRegistrationRequest;
+import com.baeldung.springai.memory.user.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final JwtUtils jwtUtil;
+    private final UserService userService;
 
-    public AuthController(JwtUtils jwtUtil) {
+    public AuthController(JwtUtils jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -22,5 +28,11 @@ public class AuthController {
         } else {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody UserRegistrationRequest request) {
+        User user = userService.registerUser(request);
+        return ResponseEntity.ok(user);
     }
 }

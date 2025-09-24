@@ -7,9 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(SampleApplication.class);
-        app.setAdditionalProfiles("memory");
-        app.run(args);
+        SpringApplication.run(SampleApplication.class,args);
+//        SpringApplication app = new SpringApplication(SampleApplication.class,args);
     }
 
 }

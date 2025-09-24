@@ -1,0 +1,62 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+---
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring-ai
+    username: spring-ai
+    password: tanujain
+    driver-class-name: org.postgresql.Driver
+---
+spring:
+  datasource:
+    url: jdbc:hsqldb:mem:chatdb
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: sa
+    password:
+
+  ai:
+    vertex:
+      ai:
+        embedding:
+          project-id: okruti-ai
+          location: us-central1
+          text:
+            options:
+              model: "gemini-embedding-001"
+        gemini:
+          project-id: okruti-ai
+          location: us-central1
+          transport: rest
+          credentials-uri: classpath:okruti-ai-token.json
+          chat:
+            options:
+              model: gemini-2.0-flash-lite
+
+  mail:
+    host: smtp.hostinger.com
+    port: 587
+    username: support@peoplenest.in
+    password: PeopleNest@123
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+  jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:org/springframework/ai/chat/memory/repository/jdbc/schema-hsqldb.sql
