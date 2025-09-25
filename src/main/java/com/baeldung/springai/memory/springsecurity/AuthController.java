@@ -1,5 +1,6 @@
 package com.baeldung.springai.memory.springsecurity;
 
+import com.baeldung.springai.memory.user.LoginRequest;
 import com.baeldung.springai.memory.user.User;
 import com.baeldung.springai.memory.user.UserRegistrationRequest;
 import com.baeldung.springai.memory.user.UserService;
@@ -20,16 +21,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
-        // For demo purposes
-        if ("admin".equals(username) && "password".equals(password)) {
-            String token = jwtUtil.generateToken(username);
-            return ResponseEntity.ok(token);
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+        return userService.authenticate(request.getEmail(),request.getPassword())
+                .map(user -> {
+                    String token = jwtUtil.generateToken(user.getEmail());
+                    return ResponseEntity.ok(token);
+                })
+                .orElse(ResponseEntity.status(401).body("Invalid credentials"));
     }
-
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody UserRegistrationRequest request) {
         User user = userService.registerUser(request);

@@ -1,6 +1,7 @@
 package com.baeldung.springai.memory.springsecurity;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.baeldung.springai.memory.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +20,11 @@ import java.util.Collections;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtil;
+    private final UserService userService;
 
-    public JwtAuthFilter(JwtUtils jwtUtil) {
+    public JwtAuthFilter(JwtUtils jwtUtil,UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService=userService;
     }
 
     @Override
@@ -35,15 +38,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(token)) {
                 String username = jwtUtil.extractUsername(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, "123", Collections.emptyList());
+                userService.findByEmail(username).ifPresent(user -> {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    user.getUsername(), null, Collections.emptyList());
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                });
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
