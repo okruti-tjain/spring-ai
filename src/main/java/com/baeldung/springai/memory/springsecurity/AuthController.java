@@ -4,7 +4,6 @@ import com.baeldung.springai.memory.user.LoginRequest;
 import com.baeldung.springai.memory.user.User;
 import com.baeldung.springai.memory.user.UserRegistrationRequest;
 import com.baeldung.springai.memory.user.UserService;
-import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginRequest request) {
         return userService.authenticate(request.getEmail(),request.getPassword())
                 .map(user -> {
-                    String token = jwtUtil.generateToken(user.getEmail());
+                    String token = jwtUtil.generateJwtToken(user.getEmail());
                     return ResponseEntity.ok(token);
                 })
                 .orElse(ResponseEntity.status(401).body("Invalid credentials"));
