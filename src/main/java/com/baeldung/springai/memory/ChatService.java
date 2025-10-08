@@ -74,7 +74,7 @@ public ChatService(ChatModel chatModel,
         String response = callAI(prompt);
         saveToVectorStore(prompt, response);
 
-        return new ChatRequest(prompt, response, embedPrompt(prompt), conversationId);
+        return new ChatRequest(prompt, response, null, conversationId);
     }
 
 
