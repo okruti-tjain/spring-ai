@@ -1,5 +1,4 @@
 package com.baeldung.springai.memory.springsecurity;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,55 +12,40 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-public class JwtUtils {
+public class JwtUtils{
 
     private final String SECRET_KEY = "u8Xb9QmL5J4nD7sR1vFg0KpTeYwZ2cXs";
-    private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    private final long EXPIRATION_TIME = 1000 * 60 * 60*24;
+    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
 
-    public String generateJwtToken( String username) {
+    public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + EXPIRATION_TIME))
-                .signWith(key)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getUsernameFromJwtToken(String token) {
+    public String extractUsername(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
-    public Long getUserIdFromJwtToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.get("userId", Long.class);
-    }
-
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SignatureException e) {
-            System.err.println("Invalid JWT signature: " + e.getMessage());
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            System.err.println("JWT token expired: " + e.getMessage());
-        } catch (io.jsonwebtoken.MalformedJwtException e) {
-            System.err.println("Malformed JWT token: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("JWT validation error: " + e.getMessage());
+        } catch (JwtException e) {
+            return false;
         }
-        return false;
     }
 
     //  Check if current user is authenticated
@@ -69,25 +53,17 @@ public class JwtUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null
                 && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getPrincipal());
+                && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     //  get the current username
     public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null &&
-                authentication.isAuthenticated()) {
+                authentication.isAuthenticated() &&
+                !(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName(); // username from JWT
         }
         return null;
     }
-    public Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            return userDetails.getUserId();
-        }
-        return null;
-    }
 }
-
