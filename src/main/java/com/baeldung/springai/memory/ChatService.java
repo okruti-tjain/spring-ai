@@ -56,7 +56,9 @@ public ChatService(ChatModel chatModel,
     private ChatClient buildChatClient() {
         ChatClient.Builder builder = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .defaultTools(weatherTool, emailTool);
+//                .defaultTools(weatherTool, emailTool)
+                ;
+
 
         if (jwtUtils.isAuthenticated()) {
             System.out.println("Authenticated user: " + jwtUtils.getCurrentUsername());
